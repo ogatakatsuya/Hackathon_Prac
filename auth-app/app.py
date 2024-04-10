@@ -1,9 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+import os
 
 app = Flask(__name__)
 
-app.config["JWT_SECRET_KEY"] = "secret-key"
+app.config["JWT_SECRET_KEY"] = os.environ.get('SECRET_KEY', 'default-secret-key')
 jwt = JWTManager(app)
 
 users = {
