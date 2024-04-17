@@ -4,6 +4,7 @@ import os
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from models import db,User,Task
 import os
 
 
@@ -19,20 +20,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = database
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["JWT_SECRET_KEY"] = os.environ.get('SECRET_KEY', 'default-secret-key')
 
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
-
-# ユーザーモデルの定義
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-    
-    def __init__(self, user_id, password):
-        self.user_id = user_id
-        self.password = password
 
 @app.route('/')
 def hello():
@@ -53,21 +43,10 @@ def login():
     access_token = create_access_token(identity={"id": user.id, "user_id": user.user_id})
     return jsonify(access_token=access_token)
 
-@app.route("/info", methods=["GET"])
-@jwt_required()
-def get_info(): 
-    current_user = get_jwt_identity()
-    # JWTトークンからユーザーIDを取得してデータベースからユーザー情報を取得
-    user = User.query.get(current_user["id"])
-    return jsonify({"id": user.id, "user_id": user.user_id})
-
 @app.route("/register", methods=["POST"])
 def register():
     user_id = request.json.get("id", None)
     password = request.json.get("password", None)
-    
-    print(user_id)
-    print(password)
 
     # 入力値の確認
     if not user_id or not password:
@@ -82,8 +61,20 @@ def register():
     new_user = User(user_id=user_id, password=password)
     db.session.add(new_user)
     db.session.commit()
-    print("success!!!!!!!!!!")
     return jsonify({"message": "ユーザー登録が完了しました"}), 201
+
+@app.route("/task", methods=["POST","GET"])
+def tasks():
+    if request.method == "POST":
+        task = request.json.get("task", None)
+        memo = request.json.get("memo", None)
+        
+        new_task = Task(task=task,memo=memo)
+        db.session.add(new_task)
+        db.session.commit()
+        return jsonify({"message":"タスク登録が完了しました"})
+    else:
+        return jsonify({"message":"タスクを表示します"})
 
 if __name__ == '__main__':
     app.run()
