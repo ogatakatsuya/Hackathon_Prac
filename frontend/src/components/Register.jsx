@@ -32,7 +32,6 @@ const Resister = () => {
                 value={newName}
                 onChange={(e) => {setNewName(e.target.value)}} />
                 <p>{newName}</p>
-                <br />
                 <label>パスワード:</label>
                 <input 
                 type="password" 
@@ -40,7 +39,6 @@ const Resister = () => {
                 value={newPass}
                 onChange={(e) => {setNewPass(e.target.value)}} />
                 <p>{newPass}</p>
-                <br />
                 <button type="submit">登録</button>
             </form>
             <p>{message}</p>
