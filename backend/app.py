@@ -121,6 +121,24 @@ def get_tasks():
     
     return jsonify(serialized_tasks)
 
+@app.route("/task/<string:date>",methods=["GET"])
+@jwt_required()
+def get_day_task(date):
+    currenUser = get_jwt_identity()["id"]
+    tasks = Task.query.filter_by(user_id = currenUser, date=date).all()
+    serialized_tasks = []
+    
+    for task in tasks:
+        serialized_tasks.append({
+            "id": task.id,
+            "task": task.task,
+            "memo": task.memo,
+            "date": task.date,
+            "user_id": task.user_id
+        })
+    
+    return jsonify(serialized_tasks)
+
 @app.route("/task/<int:task_id>", methods=["DELETE"])
 @jwt_required()
 def delete_task(task_id):
@@ -130,6 +148,20 @@ def delete_task(task_id):
     db.session.commit()
     
     return jsonify({"message":"content deleted successfully!"})
+
+@app.route("/task/<int:task_id>", methods=["PUT"])
+@jwt_required
+def update(task_id):
+    currentUser = get_jwt_identity()["id"]
+    target_data = Task.query.filter_by(id=task_id, user_id=currentUser).first_or_404()
+    task = request.json.get("task", None)
+    memo = request.json.get("memo", None)
+    date = request.json.get("date", None)
+    
+    target_data.task = task
+    target_data.memo = memo
+    target_data.date = date
+    db.session.commit()
 
 if __name__ == '__main__':
     app.run()
