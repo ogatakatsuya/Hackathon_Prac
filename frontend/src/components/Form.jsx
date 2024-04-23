@@ -8,7 +8,7 @@ const Form = ({ accessToken, setTasks }) => {
 
     const add = async (e) => {
         e.preventDefault();
-        const res = await fetch('http://localhost:5000/task', {
+        const res = await fetch('http://localhost:5000/task/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

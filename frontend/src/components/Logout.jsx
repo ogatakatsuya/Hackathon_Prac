@@ -4,7 +4,7 @@ const Logout = ({setAccessToken}) => {
     const [msg, setMsg] = useState("");
 
     const handleLogout = () => {
-        fetch('http://localhost:5000/logout', {
+        fetch('http://localhost:5000/auth/logout', {
             method: 'GET',
             credentials: 'include', // セッション情報を送信するための設定
             headers: {

@@ -7,7 +7,7 @@ const Index = ({ accessToken }) => {
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const res = await fetch('http://localhost:5000/task', {
+                const res = await fetch('http://localhost:5000/task/', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
