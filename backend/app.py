@@ -5,8 +5,6 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from models import db,User,Task
-import os
-
 
 app = Flask(__name__)
 CORS(app)
