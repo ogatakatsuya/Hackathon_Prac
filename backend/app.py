@@ -5,9 +5,15 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from models import db,User,Task
+from flask_login import LoginManager
+from flask_login import login_user, logout_user, current_user, login_required
+from flask_cors import CORS
+from auth.view import auth_bp
+from task.view import task_bp
+
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # データベースの設定
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -20,59 +26,20 @@ app.config["JWT_SECRET_KEY"] = os.environ.get('SECRET_KEY', 'default-secret-key'
 
 db.init_app(app)
 migrate = Migrate(app, db)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
 jwt = JWTManager(app)
+app.register_blueprint(auth_bp)
+app.register_blueprint(task_bp)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @app.route('/')
 def hello():
     return "Hello World from Flask!"
-
-@app.route("/login", methods=["POST"])
-def login():
-    user_id = request.json.get("id", None)
-    password = request.json.get("password", None)
-
-    # データベースからユーザーを取得して認証
-    user = User.query.filter_by(user_id=user_id).first()
-    
-    if not user or user.password != password:
-        return jsonify({"error": "認証失敗：無効な資格情報です"}), 401
-
-    # アクセストークンの作成
-    access_token = create_access_token(identity={"id": user.id, "user_id": user.user_id})
-    return jsonify(access_token=access_token)
-
-@app.route("/register", methods=["POST"])
-def register():
-    user_id = request.json.get("id", None)
-    password = request.json.get("password", None)
-
-    # 入力値の確認
-    if not user_id or not password:
-        return jsonify({"error": "ユーザーIDまたはパスワードが入力されていません"}), 400
-    
-    existing_user = User.query.filter_by(user_id=user_id).first()
-    
-    if existing_user:
-        return jsonify({"error": "ユーザーIDは既に使用されています"}), 400
-
-    # 新しいユーザーの作成とデータベースへの保存
-    new_user = User(user_id=user_id, password=password)
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({"message": "ユーザー登録が完了しました"}), 201
-
-@app.route("/task", methods=["POST","GET"])
-def tasks():
-    if request.method == "POST":
-        task = request.json.get("task", None)
-        memo = request.json.get("memo", None)
-        
-        new_task = Task(task=task,memo=memo)
-        db.session.add(new_task)
-        db.session.commit()
-        return jsonify({"message":"タスク登録が完了しました"})
-    else:
-        return jsonify({"message":"タスクを表示します"})
 
 if __name__ == '__main__':
     app.run()
