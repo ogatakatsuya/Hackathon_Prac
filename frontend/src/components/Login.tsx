@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/router";
 
-const Login = () => {
+const Login = (props: any) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -11,7 +11,6 @@ const Login = () => {
   const [Message, setMessage] = useState("");
   const [isRegisterPage, setRegisterPage] = useState(false);
   const [isRegistered, setRegistered] = useState(false);
-  const router = useRouter();
 
   const handleUserNameChange = (event: any) => {
     setUserName(event.target.value);
@@ -32,7 +31,7 @@ const Login = () => {
     setMessage("");
 
     if (isRegisterPage) {
-      const res = await fetch("http://127.0.0.1:5000/register", {
+      const res = await fetch("http://127.0.0.1:5000/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,7 +43,7 @@ const Login = () => {
       setRegistered(true);
       setMessage(data.message);
     } else {
-      const res = await fetch("http://127.0.0.1:5000/login", {
+      const res = await fetch("http://127.0.0.1:5000/auth/login", {
         //login and get cookie
         method: "POST",
         headers: {
@@ -56,7 +55,7 @@ const Login = () => {
       handleErrors(res);
       const data = await res.json();
       const access_token = data.access_token; // Access the access_token property
-      router.push("/mypage");
+      props.onLogin(access_token); // Pass the access_token to the parent component
     }
   };
 
