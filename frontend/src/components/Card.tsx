@@ -2,21 +2,58 @@ import * as React from "react";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
-import FormDialog from "./Dialog";
+import ActTaskDialog from "./ActTaskDialog";
+import Button from "@mui/joy/Button";
+import Box from "@mui/joy/Box";
 
-export default function BasicCard(props: any) {
+export default function BasicCard({ data, token }: any) {
+  const tasks = data || [];
+  const accessToken = token;
+
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+
+  const handleAddTaskOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleAddTaskClose = () => {
+    setDialogOpen(false);
+  };
+
   return (
-    <Card sx={{ width: 320 }}>
-      <div>
-        <Typography level="title-lg">{props.title}</Typography>
-        <Typography level="body-sm">{props.time}</Typography>
-      </div>
-      <CardContent orientation="horizontal">
-        <div>
-          <Typography level="body-xs">{props.memo}</Typography>
-        </div>
-        <FormDialog title={props.title} time={props.time} memo={props.memo} />
-      </CardContent>
+    <Card sx={{ height: "100%" }}>
+      {tasks.length === 0 ? (
+        <CardContent orientation="horizontal">
+          <div>
+            <Typography level="title-lg">{"No task registered"}</Typography>
+            <Typography level="body-sm">{"Have a nice day!"}</Typography>
+          </div>
+          <div>
+            <Typography level="body-xs">{""}</Typography>
+          </div>
+        </CardContent>
+      ) : (
+        tasks.map((item: any, index: any) => (
+          <CardContent key={index}>
+            <div>
+              <Typography level="title-lg">{item.task}</Typography>
+              <Typography level="body-sm">{item.date}</Typography>
+            </div>
+            <div>
+              <Typography level="body-xs">{item.memo}</Typography>
+            </div>
+            <Box textAlign="right">
+              <Button onClick={handleAddTaskOpen}>Edit</Button>
+            </Box>
+            <ActTaskDialog
+              act="edit"
+              open={dialogOpen}
+              onClose={handleAddTaskClose}
+              token={accessToken}
+            />
+          </CardContent>
+        ))
+      )}
     </Card>
   );
 }
