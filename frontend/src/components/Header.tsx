@@ -1,6 +1,5 @@
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
@@ -9,8 +8,8 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 
-const MyHeader = (prop: any) => {
-  const auth = prop.accessToken;
+const Header = (prop: any) => {
+  const auth = prop.token;
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -38,8 +37,8 @@ const MyHeader = (prop: any) => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
+    <>
+      <AppBar elevation={0} position="sticky">
         <Toolbar>
           <IconButton
             size="large"
@@ -78,8 +77,8 @@ const MyHeader = (prop: any) => {
           )}
         </Toolbar>
       </AppBar>
-    </Box>
+    </>
   );
 };
 
-export default MyHeader;
+export default Header;

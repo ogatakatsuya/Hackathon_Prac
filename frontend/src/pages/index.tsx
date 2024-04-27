@@ -1,16 +1,26 @@
 import { NextPage } from "next";
 import Head from "next/head";
 import Login from "@/components/Login";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Mypage from "./mypage";
 import Header from "@/components/Header";
+import Box from "@mui/material/Box";
 
 const Home: NextPage = () => {
+  const [isLogin, setIsLogin] = useState(false); // ログイン状態を管理
   const [accessToken, setAccessToken] = useState("");
 
   const handleAccessToken = (token: string) => {
     setAccessToken(token); // accessTokenを設定
   };
+
+  useEffect(() => {
+    if (accessToken) {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
+  }, [accessToken]);
 
   return (
     <>
@@ -22,11 +32,17 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Header accessToken={accessToken} onLogout={handleAccessToken} />
-      {!accessToken && <Login onLogin={handleAccessToken} />}
-      {accessToken && (
-        <Mypage accessToken={accessToken} onLogout={handleAccessToken} />
-      )}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+        }}
+      >
+        <Header token={accessToken} onLogout={handleAccessToken} />
+        {!isLogin && <Login onLogin={handleAccessToken} />}
+        {isLogin && <Mypage token={accessToken} onLogout={handleAccessToken} />}
+      </Box>
     </>
   );
 };
