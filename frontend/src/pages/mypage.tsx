@@ -16,7 +16,7 @@ const Mypage = ({ token }: any) => {
   const [tasks, setTasks] = useState([]);
   const [todayTask, setTodayTask] = useState();
 
-  const accessToken = token; //useEffectの場合，tokenがundefinedになる（レンダリング順番）
+  const accessToken = token; //useEffectの場合，tokenがundefinedになる（レンダリング順番
 
   const handleDateChange = async (date: Dayjs) => {
     if (!date) return;
