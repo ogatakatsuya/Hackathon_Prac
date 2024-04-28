@@ -6,14 +6,14 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 
-export default function BasicCard({
+export default function TaskCard({
   data,
   token,
   fetchTodaysTask,
   fetchTask,
 }: {
   data: any;
-  token: any;
+  token: string;
   fetchTodaysTask: () => Promise<void>;
   fetchTask: () => Promise<void>;
 }) {

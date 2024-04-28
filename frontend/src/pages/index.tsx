@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import Head from "next/head";
 import Login from "@/components/Login";
 import { useState, useEffect } from "react";
-import Mypage from "./mypage";
+import Mypage from "@/components/Mypage";
 import Header from "@/components/Header";
 import Box from "@mui/material/Box";
 
@@ -41,7 +41,7 @@ const Home: NextPage = () => {
       >
         <Header token={accessToken} onLogout={handleAccessToken} />
         {!isLogin && <Login onLogin={handleAccessToken} />}
-        {isLogin && <Mypage token={accessToken} onLogout={handleAccessToken} />}
+        {isLogin && <Mypage token={accessToken} />}
       </Box>
     </>
   );

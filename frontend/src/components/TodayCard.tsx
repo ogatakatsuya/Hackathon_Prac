@@ -1,6 +1,6 @@
 import { Card, CardContent, Grid } from "@mui/material";
 import React from "react";
-import BasicCard from "@/components/Card";
+import TaskCard from "@/components/TaskCard";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
@@ -15,7 +15,7 @@ const TodayCard = ({
   fetchTask,
 }: {
   data: any;
-  token: any;
+  token: string;
   fetchTodaysTask: () => Promise<void>;
   fetchTask: () => Promise<void>;
 }) => {
@@ -64,7 +64,9 @@ const TodayCard = ({
           <Grid item>
             <Grid container justifyContent="space-between">
               <Grid item sx={{ pl: 1 }}>
-                <Typography variant="h5">Today's Task</Typography>
+                <Typography variant="h5" sx={{ fontWeight: "medium" }}>
+                  Today's Task
+                </Typography>
               </Grid>
               <Grid item>
                 <IconButton
@@ -89,22 +91,24 @@ const TodayCard = ({
                   <MenuItem onClick={handleAddTaskOpen}>Add new task</MenuItem>
                 </Menu>
                 <ActTaskDialog
-                  title=""
-                  date=""
-                  memo=""
-                  task_id={0}
                   act="add"
                   open={dialogOpen}
                   onClose={handleAddTaskClose}
+                  token={accessToken}
+                  title=""
+                  date=""
+                  memo=""
+                  start_time=""
+                  end_time=""
+                  task_id={0}
                   fetchTodaysTask={handlefetchTodayTask}
                   fetchTask={handlefetchTask}
-                  token={accessToken}
                 />
               </Grid>
             </Grid>
           </Grid>
           <Grid item sx={{ maxHeight: "25vh", overflow: "auto", mt: 1 }}>
-            <BasicCard
+            <TaskCard
               token={accessToken}
               data={data}
               fetchTodaysTask={handlefetchTodayTask}
