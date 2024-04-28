@@ -1,59 +1,122 @@
-import * as React from "react";
-import Card from "@mui/joy/Card";
-import CardContent from "@mui/joy/CardContent";
-import Typography from "@mui/joy/Typography";
+import React, { useState } from "react";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
 import ActTaskDialog from "./ActTaskDialog";
-import Button from "@mui/joy/Button";
-import Box from "@mui/joy/Box";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
 
-export default function BasicCard({ data, token }: any) {
+export default function BasicCard({
+  data,
+  token,
+  fetchTodaysTask,
+  fetchTask,
+}: {
+  data: any;
+  token: any;
+  fetchTodaysTask: () => Promise<void>;
+  fetchTask: () => Promise<void>;
+}) {
   const tasks = data || [];
   const accessToken = token;
 
-  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
 
-  const handleAddTaskOpen = () => {
+  const handleAddTaskOpen = (task: any) => {
+    setSelectedTask(task);
     setDialogOpen(true);
   };
 
   const handleAddTaskClose = () => {
+    setSelectedTask(null);
     setDialogOpen(false);
   };
 
+  const handlefetchTask = async () => {
+    fetchTask();
+  };
+
+  const handlefetchTodayTask = async () => {
+    fetchTodaysTask();
+  };
+
   return (
-    <Card sx={{ height: "100%" }}>
+    <>
       {tasks.length === 0 ? (
-        <CardContent orientation="horizontal">
+        <Card sx={{ flex: 1, mb: 2, pt: 1.5, pl: 2, borderRadius: 3 }}>
           <div>
-            <Typography level="title-lg">{"No task registered"}</Typography>
-            <Typography level="body-sm">{"Have a nice day!"}</Typography>
+            <Typography variant="h6" color="#0b4d87">
+              No task registered
+            </Typography>
+            <Typography variant="body2" color="#a5b1b5" sx={{ pl: 1, pb: 2 }}>
+              Have a nice day!
+            </Typography>
           </div>
-          <div>
-            <Typography level="body-xs">{""}</Typography>
-          </div>
-        </CardContent>
+        </Card>
       ) : (
         tasks.map((item: any, index: any) => (
-          <CardContent key={index}>
+          <Card
+            key={index}
+            sx={{
+              flex: 1,
+              mb: 2,
+              pt: 1.5,
+              pl: 2,
+              borderRadius: 3,
+            }}
+          >
             <div>
-              <Typography level="title-lg">{item.task}</Typography>
-              <Typography level="body-sm">{item.date}</Typography>
+              <Grid container justifyContent="space-between">
+                <Grid item>
+                  <Typography variant="h6" color="#0b4d87">
+                    {item.task}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant="body2" color="#0b4d87" sx={{ pr: 2 }}>
+                    {item.date}
+                  </Typography>
+                </Grid>
+              </Grid>
             </div>
             <div>
-              <Typography level="body-xs">{item.memo}</Typography>
+              <Grid container justifyContent="space-between" sx={{ pl: 1 }}>
+                <Grid item>
+                  <Typography variant="body2" color="#a5b1b5">
+                    {item.memo ? item.memo : "no memo"}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Box textAlign="right">
+                    <Button
+                      variant="text"
+                      onClick={() => handleAddTaskOpen(item)}
+                    >
+                      Edit
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
             </div>
-            <Box textAlign="right">
-              <Button onClick={handleAddTaskOpen}>Edit</Button>
-            </Box>
-            <ActTaskDialog
-              act="edit"
-              open={dialogOpen}
-              onClose={handleAddTaskClose}
-              token={accessToken}
-            />
-          </CardContent>
+            {selectedTask === item && (
+              <ActTaskDialog
+                title={item.task}
+                date={item.date}
+                memo={item.memo}
+                task_id={item.id}
+                act="edit"
+                open={dialogOpen}
+                onClose={handleAddTaskClose}
+                fetchTask={handlefetchTask}
+                fetchTodaysTask={handlefetchTodayTask}
+                token={accessToken}
+              />
+            )}
+          </Card>
         ))
       )}
-    </Card>
+    </>
   );
 }

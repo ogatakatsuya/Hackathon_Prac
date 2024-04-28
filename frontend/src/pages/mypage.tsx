@@ -8,6 +8,8 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import BasicCard from "@/components/Card";
 import TodayCard from "@/components/TodayCard";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
 
 const Mypage = ({ token }: any) => {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
@@ -21,71 +23,57 @@ const Mypage = ({ token }: any) => {
     setSelectedDate(date);
   };
 
-  useEffect(() => {
-    const fetchTodaysTask = async () => {
-      const today = dayjs().format("YYYY-MM-DD");
+  const fetchTodaysTask = async () => {
+    const today = dayjs().format("YYYY-MM-DD");
 
-      try {
-        const res = await fetch("http://localhost:5000/task/" + today, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setTodayTask(data);
-          console.log("today's task:" + data);
-          // 取得したデータを処理する
-        } else {
-          console.error("Error fetching tasks:", res.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
+    try {
+      const res = await fetch("http://localhost:5000/task/" + today, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTodayTask(data);
+        console.log("today's task:" + data);
+        // 取得したデータを処理する
+      } else {
+        console.error("Error fetching tasks:", res.statusText);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchTodaysTask();
   }, []);
 
-  useEffect(() => {
-    const fetchTask = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/task/", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setTasks(data);
-          console.log("my task:" + data);
-          // 取得したデータを処理する
-        } else {
-          console.error("Error fetching tasks:", res.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
+  const fetchTask = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/task/", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTasks(data);
+        console.log("my task:" + data);
+        // 取得したデータを処理する
+      } else {
+        console.error("Error fetching tasks:", res.statusText);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchTask();
   }, []);
-
-  // const deleteTask = async (task_id: any) => {
-  //   const url = "http://localhost:5000/task/" + task_id;
-  //   const res = await fetch(url, {
-  //     method: "DELETE",
-  //     headers: {
-  //       Authorization: `Bearer ${accessToken}`,
-  //     },
-  //   });
-  //   if (res.ok) {
-  //     setTasks((prev) => prev.filter((task) => task.id != task_id));
-  //   } else {
-  //     console.log("error");
-  //   }
-  // };
 
   return (
     <Box
@@ -108,7 +96,12 @@ const Mypage = ({ token }: any) => {
       >
         <Grid item xs={6} sx={{ display: "flex", flexDirection: "column" }}>
           <Box sx={{ pt: 3, pl: 3, flex: 3 }}>
-            <TodayCard data={todayTask} token={accessToken} />
+            <TodayCard
+              data={todayTask}
+              token={accessToken}
+              fetchTodaysTask={fetchTodaysTask}
+              fetchTask={fetchTask}
+            />
           </Box>
           <Box sx={{ pt: 3, pl: 3, flex: 6 }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -128,8 +121,27 @@ const Mypage = ({ token }: any) => {
             flex: "1",
           }}
         >
-          <Box sx={{ flex: 1, bgcolor: "#ffffff", borderRadius: 3 }}>
-            <BasicCard token={accessToken} data={tasks} />
+          <Box
+            sx={{
+              flex: 1,
+              bgcolor: "#ffffff",
+              borderRadius: 3,
+              padding: 2,
+              maxHeight: "100%",
+            }}
+          >
+            <Typography variant="h5" color="#0b4d87" sx={{ pl: 2, pb: 1 }}>
+              My Tasks
+            </Typography>
+            <Divider variant="middle" sx={{ mb: 2 }} />
+            <Box sx={{ maxHeight: "70vh", overflow: "auto" }}>
+              <BasicCard
+                token={accessToken}
+                data={tasks}
+                fetchTodaysTask={fetchTodaysTask}
+                fetchTask={fetchTask}
+              />
+            </Box>
           </Box>
         </Grid>
       </Grid>
