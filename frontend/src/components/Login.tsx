@@ -31,26 +31,32 @@ const Login = (props: any) => {
     setMessage("");
 
     if (isRegisterPage) {
-      const res = await fetch("http://127.0.0.1:5000/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: userName, password: password }),
-      });
+      const res = await fetch(
+        "https://scheduling-endpoint-8e42d36f5cf9.herokuapp.com/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: userName, password: password }),
+        }
+      );
 
       const data = await res.json();
       setRegistered(true);
       setMessage(data.message);
     } else {
-      const res = await fetch("http://127.0.0.1:5000/auth/login", {
-        //login and get cookie
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: userName, password: password }),
-      });
+      const res = await fetch(
+        "https://scheduling-endpoint-8e42d36f5cf9.herokuapp.com/auth/login",
+        {
+          //login and get cookie
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: userName, password: password }),
+        }
+      );
 
       handleErrors(res);
       const data = await res.json();

@@ -22,14 +22,17 @@ const Header = (prop: any) => {
   };
 
   const handleLogout = () => {
-    fetch("http://localhost:5000/auth/logout", {
-      method: "GET",
-      credentials: "include", // セッション情報を送信するための設定
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    })
+    fetch(
+      "https://scheduling-endpoint-8e42d36f5cf9.herokuapp.com/auth/logout",
+      {
+        method: "GET",
+        credentials: "include", // セッション情報を送信するための設定
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    )
       .then((res) => res.json())
       .then(() => {
         prop.onLogout("");

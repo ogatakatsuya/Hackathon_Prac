@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import ActTaskDialog from "./ActTaskDialog";
 import Button from "@mui/material/Button";
@@ -75,8 +74,21 @@ export default function BasicCard({
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant="body2" color="#0b4d87" sx={{ pr: 2 }}>
+                  <Typography
+                    variant="body2"
+                    color="#0b4d87"
+                    textAlign="center"
+                    sx={{ pr: 2 }}
+                  >
                     {item.date}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="#699dc7"
+                    textAlign="center"
+                    sx={{ pr: 2 }}
+                  >
+                    {item.start_time} - {item.end_time}
                   </Typography>
                 </Grid>
               </Grid>
@@ -105,6 +117,8 @@ export default function BasicCard({
                 title={item.task}
                 date={item.date}
                 memo={item.memo}
+                start_time={item.start_time}
+                end_time={item.end_time}
                 task_id={item.id}
                 act="edit"
                 open={dialogOpen}
