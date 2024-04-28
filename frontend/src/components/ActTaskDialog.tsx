@@ -50,6 +50,13 @@ export default function ActTaskDialog({
   const [selectedDate, setSelectedDate] = React.useState<Dayjs | null>(dayjs());
   const [message, setMessage] = React.useState("");
 
+  const handleDeleteAction = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    if (window.confirm("Are you sure you want to delete this task?"))
+      await handleDelete(event);
+  };
+
   const [isEdit, setIsEdit] = React.useState(false);
 
   const accessToken = token;
@@ -70,7 +77,8 @@ export default function ActTaskDialog({
     }
   }, [date]);
 
-  const handleDelete = async () => {
+  const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
     const res = await fetch("http://localhost:5000/task/" + task_id, {
       method: "DELETE",
       headers: {
@@ -80,7 +88,6 @@ export default function ActTaskDialog({
 
     const data = await res.json();
     if (res.ok) {
-      console.log("successfully deleted");
       handlefetchTodayTask();
       handlefetchTask();
     } else {
@@ -122,68 +129,70 @@ export default function ActTaskDialog({
   };
 
   return (
-    <Dialog open={open} onClose={handleCloseDialog} fullWidth>
-      <DialogTitle>
-        {act === "add"
-          ? "Add new task"
-          : act === "edit"
-          ? "Edit this task"
-          : ""}
-      </DialogTitle>
-      <form onSubmit={handleSubmit}>
-        <DialogContent>
-          <TextField
-            autoFocus
-            required
-            label="title"
-            name="title"
-            fullWidth
-            defaultValue={title}
-            variant="standard"
-          />
-        </DialogContent>
-        <DialogContent>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Select date"
-              value={selectedDate}
-              onChange={(newValue) => setSelectedDate(newValue)}
-              minDate={dayjs()}
-              slotProps={{
-                textField: {
-                  required: true,
-                },
-              }}
+    <>
+      <Dialog open={open} onClose={handleCloseDialog} fullWidth>
+        <DialogTitle>
+          {act === "add"
+            ? "Add new task"
+            : act === "edit"
+            ? "Edit this task"
+            : ""}
+        </DialogTitle>
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+            <TextField
+              autoFocus
+              required
+              label="title"
+              name="title"
+              fullWidth
+              defaultValue={title}
+              variant="standard"
             />
-          </LocalizationProvider>
-        </DialogContent>
-        <DialogContent>
-          <TextField
-            label="memo"
-            name="memo"
-            fullWidth
-            multiline
-            rows={4}
-            defaultValue={memo}
-            variant="standard"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Grid container justifyContent="space-between">
-            <Grid item>
-              {isEdit && (
-                <Button onClick={handleDelete} color="error">
-                  Delete
-                </Button>
-              )}
+          </DialogContent>
+          <DialogContent>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Select date"
+                value={selectedDate}
+                onChange={(newValue) => setSelectedDate(newValue)}
+                minDate={dayjs()}
+                slotProps={{
+                  textField: {
+                    required: true,
+                  },
+                }}
+              />
+            </LocalizationProvider>
+          </DialogContent>
+          <DialogContent>
+            <TextField
+              label="memo"
+              name="memo"
+              fullWidth
+              multiline
+              rows={4}
+              defaultValue={memo}
+              variant="standard"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Grid container justifyContent="space-between">
+              <Grid item>
+                {isEdit && (
+                  <Button onClick={handleDeleteAction} color="error">
+                    Delete
+                  </Button>
+                )}
+              </Grid>
+              <Grid item>
+                <Button onClick={handleCloseDialog}>Cancel</Button>
+                <Button type="submit">Done</Button>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Button onClick={handleCloseDialog}>Cancel</Button>
-              <Button type="submit">Done</Button>
-            </Grid>
-          </Grid>
-        </DialogActions>
-      </form>
-    </Dialog>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </>
   );
 }
