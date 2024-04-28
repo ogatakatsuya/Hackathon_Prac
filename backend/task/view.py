@@ -18,15 +18,19 @@ def add_tasks():
     task = request.json.get("task", None)
     memo = request.json.get("memo", None)
     date = request.json.get("date", None)
+    start_time = request.json.get("start_time", None)
+    end_time = request.json.get("end_time", None)
     
-    new_task = Task(task=task, memo=memo, date=date ,user_id=currentUser)
+    new_task = Task(task=task, memo=memo, date=date ,user_id=currentUser, start_time=start_time, end_time=end_time)
     db.session.add(new_task)
     db.session.commit()
     
     newTask ={
         "task": task,
         "memo": memo,
-        "date": date
+        "date": date,
+        "start-time": start_time,
+        "end-time": end_time
     }
     return jsonify({"message":"タスク登録が完了しました","new_task":newTask})
 
@@ -43,6 +47,8 @@ def get_tasks():
             "task": task.task,
             "memo": task.memo,
             "date": task.date,
+            "start_time": task.start_time,
+            "end_time": task.end_time,
             "user_id": task.user_id
         })
     
@@ -61,6 +67,8 @@ def get_day_task(date):
             "task": task.task,
             "memo": task.memo,
             "date": task.date,
+            "start_time": task.start_time,
+            "end_time": task.end_time,
             "user_id": task.user_id
         })
     
@@ -84,8 +92,12 @@ def update(task_id):
     task = request.json.get("task", None)
     memo = request.json.get("memo", None)
     date = request.json.get("date", None)
+    start_time = request.json.get("start_time", None)
+    end_time = request.json.get("end_time", None)
     
     target_data.task = task
     target_data.memo = memo
     target_data.date = date
+    target_data.start_time = start_time
+    target_data.end_time = end_time
     db.session.commit()

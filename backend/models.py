@@ -26,6 +26,8 @@ class Task(db.Model):
     task = db.Column(db.String(100), nullable=False)
     memo = db.Column(db.Text(200), nullable=True)
     date = db.Column(db.Text(30), nullable=False)
+    start_time = db.Column(db.Text(30), nullable=True)
+    end_time = db.Column(db.Text(30), nullable=True)
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', name="fk_tasks_users"), nullable=True)
     user = relationship("User", back_populates = "task")
