@@ -27,12 +27,15 @@ const Mypage = ({ token }: any) => {
     const today = dayjs().format("YYYY-MM-DD");
 
     try {
-      const res = await fetch("http://localhost:5000/task/" + today, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const res = await fetch(
+        "https://scheduling-endpoint-8e42d36f5cf9.herokuapp.com/task/" + today,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       if (res.ok) {
         const data = await res.json();
         setTodayTask(data);
@@ -52,12 +55,15 @@ const Mypage = ({ token }: any) => {
 
   const fetchTask = async () => {
     try {
-      const res = await fetch("http://localhost:5000/task/", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const res = await fetch(
+        "https://scheduling-endpoint-8e42d36f5cf9.herokuapp.com/task/",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       if (res.ok) {
         const data = await res.json();
         setTasks(data);
