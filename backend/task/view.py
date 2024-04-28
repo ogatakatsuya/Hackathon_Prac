@@ -85,7 +85,7 @@ def delete_task(task_id):
     return jsonify({"message":"content deleted successfully!"})
 
 @task_bp.route("/<int:task_id>", methods=["PUT"])
-@jwt_required
+@jwt_required()
 def update(task_id):
     currentUser = get_jwt_identity()["id"]
     target_data = Task.query.filter_by(id=task_id, user_id=currentUser).first_or_404()
@@ -101,3 +101,5 @@ def update(task_id):
     target_data.start_time = start_time
     target_data.end_time = end_time
     db.session.commit()
+    
+    return jsonify({"message":"content updated successfully!"})
