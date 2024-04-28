@@ -8,7 +8,17 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ActTaskDialog from "@/components/ActTaskDialog";
 
-const TodayCard = ({ data, token }: any) => {
+const TodayCard = ({
+  data,
+  token,
+  fetchTodaysTask,
+  fetchTask,
+}: {
+  data: any;
+  token: any;
+  fetchTodaysTask: () => Promise<void>;
+  fetchTask: () => Promise<void>;
+}) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
@@ -31,6 +41,14 @@ const TodayCard = ({ data, token }: any) => {
     setDialogOpen(false);
   };
 
+  const handlefetchTodayTask = async () => {
+    fetchTodaysTask();
+  };
+
+  const handlefetchTask = async () => {
+    fetchTask();
+  };
+
   return (
     <Card
       elevation={0}
@@ -38,25 +56,26 @@ const TodayCard = ({ data, token }: any) => {
         borderRadius: 3,
         color: "#ffffff",
         backgroundColor: "#1281e3",
-        maxHeight: "100%",
+        maxHeight: "35vh",
       }}
     >
-      <CardContent sx={{ px: 3, py: 2 }}>
+      <CardContent sx={{ px: 3, pt: 2 }}>
         <Grid container direction="column">
           <Grid item>
-            <Grid container justifyContent="space-between" sx={{ pb: 1 }}>
-              <Grid item sx={{ pl: 2 }}>
-                <Typography variant="h6">Today's Task</Typography>
+            <Grid container justifyContent="space-between">
+              <Grid item sx={{ pl: 1 }}>
+                <Typography variant="h5">Today's Task</Typography>
               </Grid>
               <Grid item>
                 <IconButton
-                  size="large"
                   aria-label="account of current user"
                   aria-controls="menu-appbar"
                   aria-haspopup="true"
                   onClick={handleMenuOpen}
                   color="inherit"
-                  sx={{ backgroundColor: "#0b4d87" }}
+                  sx={{
+                    backgroundColor: "#0b4d87",
+                  }}
                 >
                   <AddIcon />
                 </IconButton>
@@ -68,19 +87,29 @@ const TodayCard = ({ data, token }: any) => {
                   onClose={handleMenuClose}
                 >
                   <MenuItem onClick={handleAddTaskOpen}>Add new task</MenuItem>
-                  <MenuItem>View task list</MenuItem>
                 </Menu>
                 <ActTaskDialog
-                  act = "add"
+                  title=""
+                  date=""
+                  memo=""
+                  task_id={0}
+                  act="add"
                   open={dialogOpen}
                   onClose={handleAddTaskClose}
+                  fetchTodaysTask={handlefetchTodayTask}
+                  fetchTask={handlefetchTask}
                   token={accessToken}
                 />
               </Grid>
             </Grid>
           </Grid>
-          <Grid item>
-            <BasicCard data={data} />
+          <Grid item sx={{ maxHeight: "25vh", overflow: "auto", mt: 1 }}>
+            <BasicCard
+              token={accessToken}
+              data={data}
+              fetchTodaysTask={handlefetchTodayTask}
+              fetchTask={handlefetchTask}
+            />
           </Grid>
         </Grid>
       </CardContent>

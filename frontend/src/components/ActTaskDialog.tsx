@@ -9,20 +9,42 @@ import dayjs, { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import Grid from "@mui/material/Grid";
 
 export default function ActTaskDialog({
   act,
   open,
   onClose,
   token,
+  title,
+  date,
+  memo,
+  task_id,
+  fetchTodaysTask,
+  fetchTask,
 }: {
   act: string;
   open: boolean;
   onClose: () => void;
   token: any;
+  title: string;
+  date: string;
+  memo: string;
+  task_id: number;
+  fetchTodaysTask: () => Promise<void>;
+  fetchTask: () => Promise<void>;
 }) {
   const handleCloseDialog = () => {
+    setSelectedDate(dayjs());
     onClose();
+  };
+
+  const handlefetchTodayTask = async () => {
+    fetchTodaysTask();
+  };
+
+  const handlefetchTask = async () => {
+    fetchTask();
   };
 
   const [selectedDate, setSelectedDate] = React.useState<Dayjs | null>(dayjs());
@@ -40,8 +62,31 @@ export default function ActTaskDialog({
     }
   }, [act]);
 
+  React.useEffect(() => {
+    if (date) {
+      setSelectedDate(dayjs(date));
+    } else {
+      setSelectedDate(dayjs());
+    }
+  }, [date]);
+
   const handleDelete = async () => {
-    //未実装
+    const res = await fetch("http://localhost:5000/task/" + task_id, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      console.log("successfully deleted");
+      handlefetchTodayTask();
+      handlefetchTask();
+    } else {
+      setMessage(data.error);
+      console.log(message);
+    }
     handleCloseDialog();
   };
 
@@ -66,11 +111,13 @@ export default function ActTaskDialog({
     const data = await res.json();
     // 画面上にメッセージを表示
     if (res.ok) {
-      setMessage(data.message);
-      console.log(message);
+      handlefetchTodayTask();
+      handlefetchTask();
     } else {
       setMessage(data.error);
+      console.log(message);
     }
+
     handleCloseDialog();
   };
 
@@ -91,7 +138,7 @@ export default function ActTaskDialog({
             label="title"
             name="title"
             fullWidth
-            defaultValue={""}
+            defaultValue={title}
             variant="standard"
           />
         </DialogContent>
@@ -101,7 +148,6 @@ export default function ActTaskDialog({
               label="Select date"
               value={selectedDate}
               onChange={(newValue) => setSelectedDate(newValue)}
-              defaultValue={dayjs()}
               minDate={dayjs()}
               slotProps={{
                 textField: {
@@ -118,14 +164,24 @@ export default function ActTaskDialog({
             fullWidth
             multiline
             rows={4}
-            defaultValue={""}
+            defaultValue={memo}
             variant="standard"
           />
         </DialogContent>
         <DialogActions>
-          {isEdit && <Button onClick={handleDelete}>Delete</Button>}
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button type="submit">Done</Button>
+          <Grid container justifyContent="space-between">
+            <Grid item>
+              {isEdit && (
+                <Button onClick={handleDelete} color="error">
+                  Delete
+                </Button>
+              )}
+            </Grid>
+            <Grid item>
+              <Button onClick={handleCloseDialog}>Cancel</Button>
+              <Button type="submit">Done</Button>
+            </Grid>
+          </Grid>
         </DialogActions>
       </form>
     </Dialog>
