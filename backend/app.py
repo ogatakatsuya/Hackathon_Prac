@@ -10,6 +10,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from flask_cors import CORS
 from auth.view import auth_bp
 from task.view import task_bp
+from api.view import api_bp
 
 
 app = Flask(__name__)
@@ -32,6 +33,7 @@ login_manager.login_view = "login"
 jwt = JWTManager(app)
 app.register_blueprint(auth_bp)
 app.register_blueprint(task_bp)
+app.register_blueprint(api_bp)
 
 @login_manager.user_loader
 def load_user(user_id):
