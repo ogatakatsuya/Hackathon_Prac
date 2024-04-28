@@ -6,12 +6,11 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import BasicCard from "@/components/Card";
 import TodayCard from "@/components/TodayCard";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
+import QuoteCard from "@/components/QuateCard";
+import MyTasksCard from "@/components/MyTasksCard";
 
-const Mypage = ({ token }: any) => {
+const Mypage = ({ token }: { token: string }) => {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [tasks, setTasks] = useState([]);
   const [todayTask, setTodayTask] = useState();
@@ -129,25 +128,32 @@ const Mypage = ({ token }: any) => {
         >
           <Box
             sx={{
-              flex: 1,
+              flex: 2,
+              bgcolor: "#ffffff",
+              borderRadius: 3,
+              padding: 2,
+              mb: 3,
+              maxHeight: "100%",
+            }}
+          >
+            <QuoteCard />
+          </Box>
+
+          <Box
+            sx={{
+              flex: 5,
               bgcolor: "#ffffff",
               borderRadius: 3,
               padding: 2,
               maxHeight: "100%",
             }}
           >
-            <Typography variant="h5" color="#0b4d87" sx={{ pl: 2, pb: 1 }}>
-              My Tasks
-            </Typography>
-            <Divider variant="middle" sx={{ mb: 2 }} />
-            <Box sx={{ maxHeight: "70vh", overflow: "auto" }}>
-              <BasicCard
-                token={accessToken}
-                data={tasks}
-                fetchTodaysTask={fetchTodaysTask}
-                fetchTask={fetchTask}
-              />
-            </Box>
+            <MyTasksCard
+              token={accessToken}
+              tasks={tasks}
+              fetchTask={fetchTask}
+              fetchTodaysTask={fetchTodaysTask}
+            />
           </Box>
         </Grid>
       </Grid>
