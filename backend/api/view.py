@@ -20,7 +20,12 @@ def generate_response():
     question = "Please tell me one famous sentence which cheers up people's life ,and person who made it.\
                 Sentence should be 15 words . Answer-Template is (the saying)-(person name)"
     # OpenAI APIキーを設定
-    genai.configure(api_key = "AIzaSyA4xPVmui5ndZy9QkPYEt4rFZA_FTO9Qkk")
+    # .envファイルの読み込み
+    load_dotenv()
+    
+    # API-KEYの設定
+    GOOGLE_API_KEY=os.getenv('GOOGLE_API_KEY')
+    genai.configure(api_key=GOOGLE_API_KEY)
     # OpenAI GPT-3に質問を送信してレスポンスを取得
     gemini_pro = genai.GenerativeModel("gemini-pro")
     response = gemini_pro.generate_content(question)
