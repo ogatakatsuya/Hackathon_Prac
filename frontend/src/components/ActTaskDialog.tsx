@@ -50,11 +50,9 @@ export default function ActTaskDialog({
   const [selectedDate, setSelectedDate] = React.useState<Dayjs | null>(dayjs());
   const [message, setMessage] = React.useState("");
 
-  const handleDeleteAction = async (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleDeleteAction = async () => {
     if (window.confirm("Are you sure you want to delete this task?"))
-      await handleDelete(event);
+      await handleDelete();
   };
 
   const [isEdit, setIsEdit] = React.useState(false);
@@ -77,8 +75,7 @@ export default function ActTaskDialog({
     }
   }, [date]);
 
-  const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+  const handleDelete = async () => {
     const res = await fetch("http://localhost:5000/task/" + task_id, {
       method: "DELETE",
       headers: {
@@ -106,7 +103,11 @@ export default function ActTaskDialog({
       ? selectedDate.format("YYYY-MM-DD").toString()
       : "";
     const _memo = formJson.memo.toString();
-    console.log(_title, _date, _memo);
+
+    if (isEdit) {
+      await handleDelete();
+    }
+
     const res = await fetch("http://localhost:5000/task/", {
       method: "POST",
       headers: {
