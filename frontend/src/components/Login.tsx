@@ -2,15 +2,16 @@ import { useState } from "react";
 import Link from "next/link";
 import React from "react";
 import Box from "@mui/material/Box";
+import Alert from "@mui/material/Alert";
 
-const Login = (props: any) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isError, setIsError] = useState(false);
-  const [Message, setMessage] = useState("");
+  const [message, setMessage] = useState("");
   const [isRegisterPage, setRegisterPage] = useState(false);
   const [isRegistered, setRegistered] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   const handleUserNameChange = (event: any) => {
     setUserName(event.target.value);
@@ -20,14 +21,19 @@ const Login = (props: any) => {
     setPassword(event.target.value);
   };
 
+  const handleCheckboxChange = (event: any) => {
+    setIsChecked(event.target.checked);
+  };
+
   const handleRegisterChange = () => {
+    setRegistered(false);
     setRegisterPage(!isRegisterPage);
   };
 
   const onSubmit = async (event: any) => {
     event.preventDefault();
-    setIsSubmitted(true);
     setIsError(false);
+    setRegistered(false);
     setMessage("");
 
     if (isRegisterPage) {
@@ -44,7 +50,8 @@ const Login = (props: any) => {
 
       const data = await res.json();
       setRegistered(true);
-      setMessage(data.message);
+      setMessage("Registered successfully!");
+      setRegisterPage(false);
     } else {
       const res = await fetch(
         "https://scheduling-endpoint-8e42d36f5cf9.herokuapp.com/auth/login",
@@ -58,10 +65,14 @@ const Login = (props: any) => {
         }
       );
 
-      handleErrors(res);
-      const data = await res.json();
-      const access_token = data.access_token; // Access the access_token property
-      props.onLogin(access_token); // Pass the access_token to the parent component
+      if (handleErrors(res)) {
+        const data = await res.json();
+        const access_token = data.access_token; // Access the access_token property
+        onLogin(access_token); // Pass the access_token to the parent component
+        if (isChecked) {
+          localStorage.setItem("accessToken", access_token);
+        }
+      }
     }
   };
 
@@ -74,8 +85,10 @@ const Login = (props: any) => {
     if (res.ok) {
       setIsError(false);
       console.log("Logined successfully");
-      return "";
+      return true;
     }
+
+    setRegistered(false);
 
     switch (res.status) {
       case 400:
@@ -99,10 +112,11 @@ const Login = (props: any) => {
         console.log("NOT_FOUND");
         setIsError(true);
       default:
-        setMessage("エラーが発生しました。");
+        setMessage("Your Name or Password is incorrect.");
         console.log("UNHANDLED_ERROR");
         setIsError(true);
     }
+    return false;
   };
 
   return (
@@ -127,7 +141,7 @@ const Login = (props: any) => {
             src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
             alt="logo"
           />
-          ログイン
+          Manage Your Time
         </div>
       </Link>
       <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -137,7 +151,7 @@ const Login = (props: any) => {
               Welcome back
             </h1>
 
-            <form className="space-y-4 md:space-y-6">
+            <form>
               <div>
                 <label
                   htmlFor="userName"
@@ -151,11 +165,11 @@ const Login = (props: any) => {
                   name="userName"
                   id="userName"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="123456"
+                  placeholder="Will Smith"
                   required
                 />
               </div>
-              <div>
+              <div className="mt-6">
                 <label
                   htmlFor="password"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -172,37 +186,50 @@ const Login = (props: any) => {
                   required
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-start">
-                  <div className="flex items-center h-5">
-                    <input
-                      id="remember"
-                      aria-describedby="remember"
-                      type="checkbox"
-                      className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-                    />
-                  </div>
-                  <div className="ml-3 text-sm">
-                    <label
-                      htmlFor="remember"
-                      className="text-gray-500 dark:text-gray-300"
-                    >
-                      Remember me
-                    </label>
-                    <div>
-                      {isError && <p style={{ color: "red" }}>{Message}</p>}
-                    </div>
-                  </div>
+              <Box alignItems="center" justifyContent="center">
+                {isError && (
+                  <Alert severity="error" sx={{ mt: 1 }}>
+                    {message}
+                  </Alert>
+                )}
+                {isRegistered && (
+                  <Alert severity="success" sx={{ mt: 1 }}>
+                    {message}
+                  </Alert>
+                )}
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="flex-start"
+                alignItems="center"
+                sx={{ mt: 2, ml: 0.5 }}
+              >
+                <input
+                  id="remember"
+                  aria-describedby="remember"
+                  type="checkbox"
+                  className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
+                  checked={isChecked}
+                  onChange={handleCheckboxChange}
+                />
+
+                <div className="ml-3 text-sm">
+                  <label
+                    htmlFor="remember"
+                    className="text-gray-500 dark:text-gray-300"
+                  >
+                    Remember me
+                  </label>
                 </div>
-              </div>
+              </Box>
               <button
                 onClick={onSubmit}
                 type="submit"
-                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 mt-4"
               >
                 Sign in
               </button>
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+              <p className="text-sm font-light text-gray-500 dark:text-gray-400 mt-6">
                 Don't have an account yet?{" "}
                 <button
                   onClick={handleRegisterChange}
@@ -307,7 +334,6 @@ const Login = (props: any) => {
               >
                 Create an account
               </button>
-              <div>{isRegistered && <p>{Message}</p>}</div>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
                 <button
