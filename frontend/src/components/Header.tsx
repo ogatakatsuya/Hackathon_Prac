@@ -8,8 +8,18 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 
-const Header = (prop: any) => {
-  const auth = prop.token;
+const Header = ({
+  token,
+  onLogout,
+}: {
+  token: string;
+  onLogout: (token: string) => void;
+}) => {
+  const [auth, setAuth] = React.useState<string>("");
+
+  React.useEffect(() => {
+    setAuth(token);
+  }, [token]);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -35,7 +45,8 @@ const Header = (prop: any) => {
     )
       .then((res) => res.json())
       .then(() => {
-        prop.onLogout("");
+        handleClose();
+        onLogout("");
       });
   };
 

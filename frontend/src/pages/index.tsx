@@ -5,22 +5,38 @@ import { useState, useEffect } from "react";
 import Mypage from "@/components/Mypage";
 import Header from "@/components/Header";
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Home: NextPage = () => {
-  const [isLogin, setIsLogin] = useState(false); // ログイン状態を管理
-  const [accessToken, setAccessToken] = useState("");
-
-  const handleAccessToken = (token: string) => {
-    setAccessToken(token); // accessTokenを設定
-  };
+  const [accessToken, setAccessToken] = useState<string>(""); // ログイン状態を管理
+  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (accessToken) {
+    const storedToken =
+      sessionStorage.getItem("accessToken") ||
+      localStorage.getItem("accessToken");
+    if (storedToken) {
+      setAccessToken(storedToken);
       setIsLogin(true);
-    } else {
-      setIsLogin(false);
     }
-  }, [accessToken]);
+    setIsLoading(false);
+  }, []);
+
+  const handleLogin = (token: string) => {
+    setAccessToken(token); // accessTokenを設定
+    sessionStorage.setItem("accessToken", token);
+    setIsLogin(true);
+  };
+
+  const handleLogout = () => {
+    setAccessToken("");
+    sessionStorage.removeItem("accessToken");
+    localStorage.removeItem("accessToken");
+    setIsLogin(false);
+  };
+
+  if (isLoading) return <CircularProgress />;
 
   return (
     <>
@@ -39,8 +55,8 @@ const Home: NextPage = () => {
           minHeight: "100vh",
         }}
       >
-        <Header token={accessToken} onLogout={handleAccessToken} />
-        {!isLogin && <Login onLogin={handleAccessToken} />}
+        <Header token={accessToken} onLogout={handleLogout} />
+        {!isLogin && <Login onLogin={handleLogin} />}
         {isLogin && <Mypage token={accessToken} />}
       </Box>
     </>
